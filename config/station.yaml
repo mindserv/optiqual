@@ -1,0 +1,20 @@
+optiqual1:
+  name: optiqual1
+  devices:
+    - 10G_LR
+    - 10G_SR
+  usage: end-to-end
+  # Instrument name in the instrument.yaml which also has the station name
+  tx_opm: power_meter_1
+  rx_opm: power_meter_2
+  cal_opm: 'None'
+  tx_attenuator: attenuator_1
+  rx_attenuator: 'None'
+
+optiqual2:
+  name: optiqual2
+  devices:
+    - 10G_LR
+    - 10G_SR
+  usage: end-to-end
+  rx_pm: optiqual1_attenuator

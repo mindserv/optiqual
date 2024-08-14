@@ -1,0 +1,44 @@
+
+supported_instruments:
+    # Instrument name should be unique in a station. For example,
+    # power_meter can be only one in the station optiqual1.
+  - instrument_name: 'power_meter_1'
+    # Model is mapped to Instrument class
+    model: 'HP81635A'
+    station_name: 'optiqual1'
+    desc: 'HP power meter plugged into Chassis HP8163'
+    interface: 'GPIB'
+    gpib_addr: '15'
+    chassis: '1'
+    slot: '1'
+    sub_slot: '2'
+  - instrument_name: 'attenuator_1'
+    model: 'HP8156A'
+    station_name: 'optiqual1'
+    description: 'HP power meter plugged into Chassis HP8163'
+    interface: 'GPIB'
+    gpib_addr: '15'
+    chassis: '1'
+    slot: '1'
+    sub_slot: '2'
+  - instrument_name: 'power_meter_2'
+    # Model is mapped to Instrument class
+    model: 'HP81635A'
+    station_name: 'optiqual1'
+    desc: 'HP power meter plugged into Chassis HP8163'
+    interface: 'GPIB'
+    gpib_addr: '15'
+    chassis: '1'
+    slot: '1'
+    sub_slot: '2'
+
+
+  - instrument_name: 'attenuator'
+    model: 'HP8156A'
+    station_name: 'optiqual2'
+    description: 'HP power meter plugged into Chassis HP8163'
+    interface: 'GPIB'
+    gpib_addr: '16'
+    chassis: '1'
+    slot: '1'
+    sub_slot: '2'

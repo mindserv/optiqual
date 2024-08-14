@@ -1,0 +1,13 @@
+supported_devices:
+  - product_type: '10G_LR'
+    description: "10G Long reach products by optical manufacturer XYZ"
+    dev_stage:
+      - dvt
+      - npi
+      - mfg
+  - product_type: '10G_SR'
+    description: '10G Short reach products by optical manufacturer XYZ'
+    dev_stage:
+      - dvt
+      - npi
+      - mfg
