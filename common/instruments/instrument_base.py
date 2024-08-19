@@ -1,14 +1,16 @@
 import yaml
 import pyvisa
 import sys
+import os
 
 from types import SimpleNamespace
 
 # TODO: Fix the . notation by setting the path correctly.
 from .hp81635a import hp81635a
 from .hp8156a import hp8156a
-
-INSTRUMENT_CONFIG_FILE = "/Users/kathir/mydev/optiqual/config/instrument.yaml"
+#import pdb; pdb.set_trace()
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))#os.path.dirname(os.path.dirname(os.path.abspath(__file__), '..'))
+INSTRUMENT_CONFIG_FILE = os.path.join(BASE_DIR, "config", "instrument.yaml")#"/Users/kathir/mydev/optiqual/config/instrument.yaml"
 GPIB = 'GPIB'
 I2C = 'I2C'
 
@@ -71,12 +73,13 @@ class InstrumentBase(object):
 
     def initialize_instrument(self):
         for instr in self.instruments_in_station():
+            #import pdb; pdb.set_trace()
             if instr.get('interface') == GPIB:
                 resource_manager = pyvisa.ResourceManager()
-                addr = f'{instr.get('gpib_instr')}::{instr.get('gpib_instr_addr')}'
+                addr = f'{instr.get('interface')}0::{instr.get('gpib_addr')}::INSTR'
                 # TODO: Setup instruments in Windows if MAC doesn't work
-                #init_rm = resource_manager.open_resource(addr)
-                instr_obj = instantiate_module_obj(instr.get('model').lower())(instr)
+                init_rm = resource_manager.open_resource(addr)
+                instr_obj = instantiate_module_obj(instr.get('model').lower())(init_rm, instr)
                 # Get station instrument key from the values, values are retrieved from supported_instruments already
                 # mapped to the station
                 station_instr_val = [*self.station_topology.values()]

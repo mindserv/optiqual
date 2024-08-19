@@ -4,7 +4,10 @@ from plumbum import local
 from copy import deepcopy
 from device import SupportedDevices
 from station import SupportedStations
+import os
 
+OPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEST_DIR = os.path.join(OPT_DIR, "tests")
 
 def _construct_help_msg():
     msg = """
@@ -38,7 +41,8 @@ def invoke_pytest(args, plugins=None):
     """
     try:
         # TODO: Below hardcoded path has to be replaced.
-        with local.cwd("/Users/kathir/mydev/optiqual/tests"):
+        #with local.cwd("/Users/kathir/mydev/optiqual/tests"):
+        with local.cwd(TEST_DIR):
             args = [str(arg) for arg in args]
             return_code = pytest.main(args, plugins=plugins)
     except Exception:

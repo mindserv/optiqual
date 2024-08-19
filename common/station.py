@@ -1,7 +1,9 @@
 import yaml
 from instruments.instrument_base import InstrumentBase
+import os
 
-STATION_CONFIG_PATH = "/Users/kathir/mydev/optiqual/config/station.yaml"
+STATION_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+STATION_CONFIG_PATH = os.path.join(STATION_DIR, "config", "station.yaml")
 
 
 

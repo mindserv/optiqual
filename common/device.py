@@ -1,8 +1,10 @@
 import yaml
+import os
 
 #DEVICE_CONFIG_PATH = "config/device.yaml"
 
-DEVICE_CONFIG_FILE = "/Users/kathir/mydev/optiqual/config/device.yaml"
+DIR_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEVICE_CONFIG_FILE = os.path.join(DIR_PATH, "config", "device.yaml")
 
 class SupportedDevices(object):
 

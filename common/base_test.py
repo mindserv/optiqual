@@ -8,6 +8,7 @@ class BaseTest(object):
     """
 
     def execute_example(self):
+        hp81635a()
         print(self.station)
 
     def record_results(self):
