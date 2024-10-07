@@ -19,7 +19,6 @@ class TestInstruments(BaseTest):
     @pytest.mark.dependency(depends=["TestInstruments::test_instr_one"])
     def test_instr_two(self):
         att = self.station.tx_attenuator
-        import pdb; pdb.set_trace()
         print(att.output)
         att.output = 1
         print(att.output)
