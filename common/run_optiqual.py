@@ -9,6 +9,7 @@ import os
 OPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEST_DIR = os.path.join(OPT_DIR, "tests")
 
+
 def _construct_help_msg():
     msg = """
     Usage,

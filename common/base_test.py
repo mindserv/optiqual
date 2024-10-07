@@ -1,6 +1,6 @@
 import pytest
 import logging
-from optilogger import  init_log
+from optilogger import  init_log, OptiLogger
 
 
 
@@ -10,9 +10,10 @@ class BaseTest(object):
     Tests written in pytest format will inherit from this base class.
     """
     def setup_class(self):
-        self.log = init_log(log_file_name_suffix=self.__name__)
-        self.log(f'Starting test {self.__name__}')
-        self.log(f'Test station {self.station}')
+        # self.log = init_log(log_file_name_suffix=self.__name__)
+        self.log = OptiLogger(log_file_name_suffix=self.__name__)
+        self.log.info(f'Starting test {self.__name__}')
+        #self.log.info(f'Test station {self.station}')
 
     def execute_example(self):
         hp81635a()

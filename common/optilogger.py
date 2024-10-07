@@ -14,7 +14,7 @@ CSV_LOGNAME_FORMAT: str = "{}.{}.csv"
 
 class OptiLogger(object):
 
-    def __init__(self, log_dir=DEFAULT_LOG_DIR, log_file_name_suffix=DEFAULT_LOG_FILE_NAME_PREFIX):
+    def __init__(self, log_dir: object = DEFAULT_LOG_DIR, log_file_name_suffix: object = DEFAULT_LOG_FILE_NAME_PREFIX) -> object:
 
         self.test_status = None
         self.timing_failed = None

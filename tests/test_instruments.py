@@ -10,28 +10,26 @@ class TestInstruments(BaseTest):
     @pytest.mark.dependency
     def test_instr_one(self):
         opm = self.station.tx_opm
-        #import pdb; pdb.set_trace()
-        print(opm)
-        print(opm.unit)
-        print(opm.power)
+        self.log.info(opm)
+        self.log.info(opm.unit)
+        self.log.info(opm.power)
         assert True
 
     @pytest.mark.dependency(depends=["TestInstruments::test_instr_one"])
     def test_instr_two(self):
         att = self.station.tx_attenuator
-        #import pdb; pdb.set_trace()
-        print(att)
-        print(att.output)
+        self.log.info("Attenuator Status %d" % att.output)
         att.output = 1
-        print(att.output)
-        print(att.attenuation)
-        print(att.wavelength)
+        self.log.info("Attenuator Status %d" % att.output)
+        self.log.info("Attenuation: %.f" % att.attenuation)
+        self.log.info("Current WL: %s" % att.wavelength)
         att.wavelength = 1545
-        print(att.wavelength)
+        self.log.info("Wavelength is set to %f" % (1545.0))
+        self.log.info("Attenuator WL: %s" % att.wavelength)
         att.attenuation = 5
-        print(att.attenuation)
+        self.log.info("Attenuation: %.f" % att.attenuation)
         att.attenuation = 0
-        print(att.attenuation)
+        self.log.info("Attenuation: %.f" % att.attenuation)
         att.output = 0
-        print(att.output)
+        self.log.info("Attenuator Status %d" % att.output)
         assert True

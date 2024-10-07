@@ -14,6 +14,8 @@ sub_open.argtypes = [c_int]
 sub_close = sub20dll.sub_open
 sub_close.argtypes = [c_int]
 
+MAX_BUFF_SZ = 64
+MAX_FREQ = 444444
 class MdioFrameRec(Structure):
     _fields_ = [
         ("op", ctypes.c_int),
@@ -462,3 +464,69 @@ class MdioDrivers:
             print(hex(writeValue))
 
         self.mdio_write(self.REG_MOD_GEN_CONTROL_B010, writeValue)
+
+class I2CDevice:
+    def __init__(self):
+        self.sDev = None
+        self.sHandle = None
+
+    def sub20Init(self):
+        self.sdev = sub20dll.sub_find_devices(self.sDev)
+        while(self.sDev != 0):
+            self.sDev = sub20dll.sub_find_devices(self.sDev)
+            self.sHandle = sub20dll.sub_open(self.sdev)
+
+        if not self.sHandle:
+            raise "Unable to open i2c device"
+
+    def subGetSerialNumber(self):
+        if not self.sHandle:
+            raise "Device was not opened"
+        rx_buf_sz = MAX_BUFF_SZ
+        rx_buf = create_string_buffer(rx_buf_sz)
+        resp = sub2dll.sub_get_serial_number(self.sHandle, rx_buf, rx_buf_sz)
+        if(resp < 0):
+            raise "Error in reading the Serial Number"
+        return rx_buf.value.decode('UTF-8')
+
+    def subI2CFreq(self, freq=0):
+        if not self.sHandle:
+            raise "Device was not opened"
+
+        if freq > MAX_FREQ:
+            raise ValueError("Maximum Frequency Exceeded")
+
+        freqResponse = c_int(freq)
+        sub20dll.sub_i2c_freq(self.sHandle, freqResponse)
+        return freqResponse.value
+
+    def subI2CRead(self, devAddr, regAddr, buffSz):
+        if not self.sHandle:
+            raise "Device was not opened"
+
+        regAddSz =1
+        rxBuff = create_string_buffer(buffSz)
+        resp = sub20dll.sub_i2c_read(self.sHandle, devAddr, regAddr, regAddSz, rxBuff, buffSz)
+        if resp:
+            raise "Device error in read"
+
+        return rx_buf
+
+    def subI2CWrite(self, devAddr, regAddr, dataToWrite):
+        if not self.sHandle:
+            raise "Device was not opened"
+
+        regAddrSz =1
+        txBuffSz = len(dataToWrite)
+        txBuff = create_string_buffer(dataToWrite)
+        resp = sub20dll.sub_i2c_write(self.sHandle, devAddr, regAddr, regAddSz, txBuff, txBuffSz)
+        if resp:
+            raise "Device error to write"
+
+
+
+
+
+
+
+

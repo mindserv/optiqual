@@ -1,0 +1,13 @@
+sweep_settings:
+  attenuator_settings: 'attenuator'
+  initial_attenuation: 0
+  initial_wl : 1310
+  delay_sec: 1
+  sweep_start: 0
+  sweep_step: 1
+  sweep_stop: 15
+
+
+
+
+
