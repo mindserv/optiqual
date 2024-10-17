@@ -484,7 +484,7 @@ class I2CDevice:
             raise "Device was not opened"
         rx_buf_sz = MAX_BUFF_SZ
         rx_buf = create_string_buffer(rx_buf_sz)
-        resp = sub2dll.sub_get_serial_number(self.sHandle, rx_buf, rx_buf_sz)
+        resp = sub20dll.sub_get_serial_number(self.sHandle, rx_buf, rx_buf_sz)
         if(resp < 0):
             raise "Error in reading the Serial Number"
         return rx_buf.value.decode('UTF-8')
@@ -510,7 +510,7 @@ class I2CDevice:
         if resp:
             raise "Device error in read"
 
-        return rx_buf
+        return rxBuff
 
     def subI2CWrite(self, devAddr, regAddr, dataToWrite):
         if not self.sHandle:
@@ -519,7 +519,7 @@ class I2CDevice:
         regAddrSz =1
         txBuffSz = len(dataToWrite)
         txBuff = create_string_buffer(dataToWrite)
-        resp = sub20dll.sub_i2c_write(self.sHandle, devAddr, regAddr, regAddSz, txBuff, txBuffSz)
+        resp = sub20dll.sub_i2c_write(self.sHandle, devAddr, regAddr, txBuff, txBuffSz)
         if resp:
             raise "Device error to write"
 

@@ -86,7 +86,9 @@ class TestSweeps(BaseTest):
         self.log.log_csv(data_string)
         index = 0
         data_list = list()
+        wl_list = list()
         import pdb;pdb.set_trace()
+        data_results = {"wl":[], "pwr":[], "atten":[]}
         for attn in range(self.sweep_start, self.sweep_stop, self.sweep_step):
             data_string = ""
             self.att.attenuation = attn
@@ -96,8 +98,19 @@ class TestSweeps(BaseTest):
             self.log.info(data_string)
             data_list.append((attn, self.opm.power))
             self.log.log_csv(data_string)
+            wl_list.append(self.wavelength)
             index += 1
 
+        data_results['Wl'] = wl_list
+        data_results['atten'] = [point[0] for point in data_list]
+        data_results['pwr'] = [point[1] for point in data_list]
+
+
         self.generate_chart(data_list)
+
+    def record_test_results(self):
+
+
+        self.record_results()
 
 
