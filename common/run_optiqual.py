@@ -70,15 +70,17 @@ def cli(context):
               default="10G_LR", help="Use the supported device to run the qual, ex `10G_LR`")
 @click.option("--qual-station", type=click.Choice(SupportedStations.supported_stations()),
               default="optiqual1", help="Use the supported test stations , ex `STATION1`")
-@click.option("--dut", type=click.STRING, default="MINDSERV",
+@click.option("--dut-sn", type=click.STRING, default="MINDSERV",
               help="Provide DUT's serial number if needed")
+@click.option("--dut-pn", type=click.STRING, default="MINDSERV-PN",
+              help="Provide DUT's part number if needed")
 @click.argument('pytest_args', nargs=-1, type=click.UNPROCESSED)
 @click.pass_context
-def run_optiqual(context, product_type, qual_station, dut, pytest_args):
+def run_optiqual(context, product_type, qual_station, dut_sn, dut_pn, pytest_args):
     if '--help' in pytest_args:
         click.echo(_construct_help_msg())
     _validate_device_station_map(qual_station, product_type)
-    args = ['--product-type', product_type, '--qual-station', qual_station, '--dut', dut]
+    args = ['--product-type', product_type, '--qual-station', qual_station, '--dut-sn', dut_sn, '--dut-pn', dut_pn]
     args += ['-v', '-s'] + list(pytest_args)
     invoke_pytest(args=deepcopy(args))
 

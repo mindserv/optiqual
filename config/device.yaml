@@ -11,3 +11,9 @@ supported_devices:
       - dvt
       - npi
       - mfg
+  - product_type: 'cpx100g'
+    description: 'cpx100g Short reach products by optical manufacturer XYZ'
+    dev_stage:
+      - dvt
+      - npi
+      - mfg

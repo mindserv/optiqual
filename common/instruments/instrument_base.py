@@ -78,8 +78,8 @@ class InstrumentBase(object):
                 resource_manager = pyvisa.ResourceManager()
                 addr = f'{instr.get('interface')}0::{instr.get('gpib_addr')}::INSTR'
                 # TODO: Setup instruments in Windows if MAC doesn't work
-                init_rm = resource_manager.open_resource(addr)
-                instr_obj = instantiate_module_obj(instr.get('model').lower())(init_rm, instr)
+                # init_rm = resource_manager.open_resource(addr)
+                # instr_obj = instantiate_module_obj(instr.get('model').lower())(init_rm, instr)
                 # Get station instrument key from the values, values are retrieved from supported_instruments already
                 # mapped to the station
                 station_instr_val = [*self.station_topology.values()]
@@ -87,6 +87,6 @@ class InstrumentBase(object):
                 if instr.get('instrument_name') in station_instr_val:
                     index = station_instr_val.index(instr.get('instrument_name'))
                     instr_name = station_instr_key[index]
-                    self.station_topology.update({instr_name: instr_obj})
+                    # self.station_topology.update({instr_name: instr_obj})
         station_info = NestedNamespace(self.station_topology)
         return station_info

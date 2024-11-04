@@ -1,6 +1,12 @@
 import pytest
 from station import Station, SupportedStations
-from database import *
+from database import Station as StationTable, get_connection, get_session
+from types import SimpleNamespace
+
+DB_HOST = "localhost"  # or your database host
+DB_PORT = 5432  # default PostgreSQL port
+DB_USER = "postgres"
+DB_PASSWORD = "postgres"
 
 @pytest.fixture(scope='class')
 def station(request):
@@ -10,17 +16,23 @@ def station(request):
 
 @pytest.fixture(scope='class')
 def db(request):
-    user = "postgres"
-    password = "postgres"
-    host = "localhost"  # or your database host
-    port = 5432  # default PostgreSQL port
+
     database = request.config.option.product_type
-    db_client = get_postgres_connection(user, password, host, port, database)
+    db_client = get_connection(DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, database)
     request.cls.db = db_client
     yield
 
 @pytest.fixture(scope='class')
-def test_properties(request):
-    dut = request.config.option.dut
-    pn = request.config.option.product_type
+def db_session(request):
+    database = request.config.option.product_type
+    db_session = get_session(DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, database)
+    request.cls.db_session = db_session
+    yield
+
+
+@pytest.fixture(scope='class')
+def artifacts(request):
+    sn = request.config.option.dut_sn
+    pn = request.config.option.dut_pn
+    request.cls.artifacts = SimpleNamespace(sn=sn, pn=pn)
     yield

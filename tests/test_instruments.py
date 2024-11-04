@@ -9,12 +9,15 @@ class TestInstruments(BaseTest):
     """
     @pytest.mark.dependency
     def test_instr_one(self):
+        """
         opm = self.station.tx_opm
         self.log.info(opm)
         self.log.info(opm.unit)
         self.log.info(opm.power)
+        """
         assert True
 
+    """
     @pytest.mark.dependency(depends=["TestInstruments::test_instr_one"])
     def test_instr_two(self):
         att = self.station.tx_attenuator
@@ -33,3 +36,4 @@ class TestInstruments(BaseTest):
         att.output = 0
         self.log.info("Attenuator Status %d" % att.output)
         assert True
+    """

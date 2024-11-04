@@ -3,6 +3,7 @@ optiqual1:
   devices:
     - 10G_LR
     - 10G_SR
+    - cpx100g
   usage: end-to-end
   # Instrument name in the instrument.yaml which also has the station name
   tx_opm: power_meter_1
@@ -16,5 +17,6 @@ optiqual2:
   devices:
     - 10G_LR
     - 10G_SR
+    - cpx100g
   usage: end-to-end
   rx_pm: optiqual1_attenuator
