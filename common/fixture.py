@@ -2,6 +2,7 @@ import pytest
 from station import Station, SupportedStations
 from database import Station as StationTable, get_connection, get_session
 from types import SimpleNamespace
+from instruments.sub20_driver import Sub20Driver
 
 DB_HOST = "localhost"  # or your database host
 DB_PORT = 5432  # default PostgreSQL port
@@ -35,4 +36,11 @@ def artifacts(request):
     sn = request.config.option.dut_sn
     pn = request.config.option.dut_pn
     request.cls.artifacts = SimpleNamespace(sn=sn, pn=pn)
+    yield
+
+
+@pytest.fixture(scope='class')
+def sub20(request):
+    sub20 = Sub20Driver()
+    request.cls.sub20 = sub20
     yield

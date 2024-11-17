@@ -11,7 +11,7 @@ TEST_CLASS_TABLE_MAP = {"TestSweeps": TestSweeps, "TestResults": TestResults,
                         "Dut": Dut, "DummyRxAccuracy": DummyRxAccuracy, "Station": Station}
 
 
-@pytest.mark.usefixtures("station", "db", "artifacts", "db_session")
+@pytest.mark.usefixtures("station", "db", "artifacts", "db_session", "sub20")
 class BaseTest(object):
     """
     Tests written in pytest format will inherit from this base class.

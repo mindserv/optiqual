@@ -1,21 +1,236 @@
-from ctypes import *
+from ctypes import create_string_buffer
+import sys
+#from .sub20lib import Sub20Lib
+from .sub20lib import *
+import threading
+import struct
+
+dll_handler = Sub20Lib.sub20dll
+
+lock = threading.Lock()
+
+#print(sys.path)
 import datetime
-import ctypes
 import os
 from sys import getwindowsversion
 
-sub20dll = cdll.LoadLibrary("C:/Windows/System32/sub20")
-sub_get_serial_number = sub20dll.sub_get_serial_number
-sub_get_serial_number.argtypes = [c_int, c_char_p, c_int]
-
-sub_open = sub20dll.sub_open
-sub_open.argtypes = [c_int]
-
-sub_close = sub20dll.sub_open
-sub_close.argtypes = [c_int]
-
 MAX_BUFF_SZ = 64
 MAX_FREQ = 444444
+
+def byte_length(i):
+    if i == 0:
+        return 1
+    return (i.bit_length() + 7) // 8
+
+class Sub20Driver(object):
+    def __init__(self, sub20_sn=None):
+        # Lock to sub20 shared object implementation
+
+        self._lock = lock
+        self.sub20_sn = sub20_sn
+        if self.sub20_sn == None:
+            self._connect_device(None)
+        else:
+            self._connect_device(self.sub20_sn)
+
+    def connect(self):
+        """ Reconnect with last Sub20 connected.
+        """
+        self._connect_device(self.sub20_sn)
+
+    def disconnect(self):
+        """ Disconnect from open device handler.
+        """
+        if self._device_handler is not None:
+            with self._lock:
+                dll_handler.sub_close(self._device_handler)
+
+    def get_sn(self):
+        """ Get device's serial number.
+        """
+        sn = (c_char * 10)()
+        with self._lock:
+            response = dll_handler.sub_get_serial_number(self._device_handler, sn, sizeof(sn))
+
+        if response < 0:
+            raise Exception("Could not get device's serial number")
+        else:
+            # Cast list of ascii numbers to int
+            sn_hex = ''
+            for char in list(sn.value):
+                sn_hex += chr(char)
+            return int(sn_hex, 16)
+
+
+    def get_prod_id(self):
+        """ Get device's serial number.
+        """
+        pid = (c_char * 10)()
+        with self._lock:
+            response = dll_handler.sub_get_product_id(self._device_handler, pid, sizeof(pid))
+
+        if response < 0:
+            raise Exception("Could not get device's serial number")
+        return pid
+
+
+    def discover(self):
+        """ Discover sub20 devices connected to the PC.
+
+        :rtype: list
+
+        :return: List with devices' serial numbers.
+        """
+        sn = self.get_sn()
+        self.disconnect()
+        device = self._find_devices(None)
+        sns = []
+        while device != None:
+            self._device_handler = self._open_connection(device)
+            sns.append(self.get_sn())
+            self.disconnect()
+            device = self._find_devices(device)
+        self._connect_device(sn)
+        return sns
+
+    def reset(self):
+        """ Reset Sub20 device.
+        """
+        with self._lock:
+            response = dll_handler.sub_reset(self._device_handler)
+        self._check_response(response)
+
+    def i2c_scan(self, bus=4):
+        """ Scan selected I2C bus for connected devices.
+
+        :param int bus: Bus to be scanned, on range from 0 to 4. Default values is 4 (HW Bus).
+
+        :rtype: list
+
+        :return: List with address of devices found on i2c bus.
+        """
+        # Sanity check
+        if bus < 0 or bus > 4:
+            raise Exception("Invalid I2C bus, must be between 0 and 4.")
+
+        device_cnt = (c_int)()
+        devices = (c_char * 100)()
+        if bus == 4:
+            with self._lock:
+                dll_handler.sub_i2c_scan(self._device_handler, device_cnt, devices)
+
+        return list(devices.raw[0:int(device_cnt.value)])
+
+    def i2c_read(self, devaddr, memaddr, len, bus=4):
+        """ Read I2C device data.
+
+        :param int devaddr: Address of device to be read.
+
+        :param int memaddr: Memory address to be read from i2c device.
+
+        :param int len: Length of data to be read.
+
+        :param int bus: I2C bus the device is connected to. Default value is 4.
+        """
+        # Sanity check
+        if bus < 0 or bus > 4:
+            raise Exception("Invalid I2C bus, must be between 0 and 4.")
+
+        buffer = create_string_buffer(len)
+        devaddr = devaddr >> 1
+
+        if bus == 4:
+            with self._lock:
+                response = dll_handler.sub_i2c_read(self._device_handler, devaddr, memaddr, byte_length(memaddr), buffer, len)
+        self._check_response(response)
+        return list(buffer.raw)
+
+    def i2c_write(self, devaddr, memaddr, data, bus=4):
+        """ Write data to I2C device.
+
+        :param int devaddr: Address of device to write.
+
+        :param int memaddr: Memory address to write on i2c device.
+
+        :param list data: List of bytes to be written to device.
+
+        :param int bus: I2C bus the device is connected to. Default value is 4.
+        """
+        # Sanity check
+        if bus < 0 or bus > 4:
+            raise Exception("Invalid I2C bus, must be between 0 and 4.")
+
+        if type(data) != list:
+            data = [data]
+
+        devaddr = devaddr >> 1
+        data_string = [struct.pack('>B', e) for e in data]
+        write_data = b''.join(data_string)
+        encoded_data = create_string_buffer(write_data)
+
+        if bus == 4:
+            with self._lock:
+                response = dll_handler.sub_i2c_write(self._device_handler, devaddr, memaddr, byte_length(memaddr), encoded_data,
+                                         len(data))
+        else:
+            with self._lock:
+                response = dll_handler.sub_bb_i2c_write(self._device_handler, bus, devaddr, memaddr, byte_length(memaddr),
+                                            encoded_data, len(data))
+
+        self._check_response(response)
+
+    def _connect_device(self, sub20_sn):
+        """ Connect to the sub20 with a specific serial number. Raises Exception if device is not found.
+
+        :param str sub20_sn: Serial number of sub20 to be connected.
+        """
+        device = self._find_devices(None)
+        while device != None:
+            self._device_handler = self._open_connection(device)
+            try:
+                found_sn = self.get_sn()
+            except:
+                found_sn = None
+            if found_sn == sub20_sn or sub20_sn == None:
+                self.sub20_sn = self.get_sn()
+                return
+            self.disconnect()
+            device = self._find_devices(device)
+        raise Exception('Device with serial number ' + str(sub20_sn) + ' not found!')
+
+    def _find_devices(self, sub20_device=None):
+        """ Search for Sub20 devices connected, returns handle to first Sub20 discovered. Will search starting
+        with next device after sub20_handler.
+
+        :param sub_device: Position to start searching for, default is None (begin new search).
+
+        :rtype: sub_device.
+
+        :return: sub_device of next device found.
+        """
+        with self._lock:
+            return dll_handler.sub_find_devices(sub20_device)
+
+    def _open_connection(self, sub20_device):
+        """ Open connection with sub20 handler.
+
+        :param sub_device sub20_device: Handler to device to be opened.
+
+        :rtype: sub_handle
+
+        :return: Sub20 handle.
+        """
+        with self._lock:
+            return dll_handler.sub_open(sub20_device)
+
+    def _check_response(self, response):
+        pass
+
+
+
+
+'''
+TODO: REMOVE THE MIDO class
 class MdioFrameRec(Structure):
     _fields_ = [
         ("op", ctypes.c_int),
@@ -464,69 +679,5 @@ class MdioDrivers:
             print(hex(writeValue))
 
         self.mdio_write(self.REG_MOD_GEN_CONTROL_B010, writeValue)
-
-class I2CDevice:
-    def __init__(self):
-        self.sDev = None
-        self.sHandle = None
-
-    def sub20Init(self):
-        self.sdev = sub20dll.sub_find_devices(self.sDev)
-        while(self.sDev != 0):
-            self.sDev = sub20dll.sub_find_devices(self.sDev)
-            self.sHandle = sub20dll.sub_open(self.sdev)
-
-        if not self.sHandle:
-            raise "Unable to open i2c device"
-
-    def subGetSerialNumber(self):
-        if not self.sHandle:
-            raise "Device was not opened"
-        rx_buf_sz = MAX_BUFF_SZ
-        rx_buf = create_string_buffer(rx_buf_sz)
-        resp = sub20dll.sub_get_serial_number(self.sHandle, rx_buf, rx_buf_sz)
-        if(resp < 0):
-            raise "Error in reading the Serial Number"
-        return rx_buf.value.decode('UTF-8')
-
-    def subI2CFreq(self, freq=0):
-        if not self.sHandle:
-            raise "Device was not opened"
-
-        if freq > MAX_FREQ:
-            raise ValueError("Maximum Frequency Exceeded")
-
-        freqResponse = c_int(freq)
-        sub20dll.sub_i2c_freq(self.sHandle, freqResponse)
-        return freqResponse.value
-
-    def subI2CRead(self, devAddr, regAddr, buffSz):
-        if not self.sHandle:
-            raise "Device was not opened"
-
-        regAddSz =1
-        rxBuff = create_string_buffer(buffSz)
-        resp = sub20dll.sub_i2c_read(self.sHandle, devAddr, regAddr, regAddSz, rxBuff, buffSz)
-        if resp:
-            raise "Device error in read"
-
-        return rxBuff
-
-    def subI2CWrite(self, devAddr, regAddr, dataToWrite):
-        if not self.sHandle:
-            raise "Device was not opened"
-
-        regAddrSz =1
-        txBuffSz = len(dataToWrite)
-        txBuff = create_string_buffer(dataToWrite)
-        resp = sub20dll.sub_i2c_write(self.sHandle, devAddr, regAddr, txBuff, txBuffSz)
-        if resp:
-            raise "Device error to write"
-
-
-
-
-
-
-
+'''
 
