@@ -1,14 +1,16 @@
 import pytest
-from optilogger import init_log
-from database import TestStatus, TestResults, Dut, DummyRxAccuracy, TestSweeps, Station
+from optilogger import init_log, OptiLogger
+from database import TestStatus, TestResults, Dut, DummyRxAccuracy, TestSweeps, Station, TestRxPowerSweep
 
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from sqlalchemy.sql import text
 import datetime
 
+# TODO: Auto detect test table names
 TEST_CLASS_TABLE_MAP = {"TestSweeps": TestSweeps, "TestResults": TestResults,
-                        "Dut": Dut, "DummyRxAccuracy": DummyRxAccuracy, "Station": Station}
+                        "Dut": Dut, "DummyRxAccuracy": DummyRxAccuracy, "Station": Station,
+                        "TestRxPowerSweep": TestRxPowerSweep}
 
 
 @pytest.mark.usefixtures("station", "db", "artifacts", "db_session", "sub20")
@@ -89,7 +91,8 @@ class BaseTest(object):
         self._record_test_results(self.dut_id, test_name, test_config, formatted_datetime, station_id)
 
     def setup(self, test_name, test_config):
-        self.log = init_log(log_file_name_suffix=test_name)
+        #self.log = init_log(log_file_name_suffix=test_name)
+        self.log = OptiLogger(log_file_name_suffix=test_name)
         self.log.info(f'Starting test {test_name}')
         self.log.info(f'Test station {self.station}')
         # Insert entry if the SN and PN is missing
@@ -140,6 +143,7 @@ class BaseTest(object):
             entry['test_results_id'] = self.tr_id
 
         table_cls = TEST_CLASS_TABLE_MAP.get(test_table_name)
+        import pdb; pdb.set_trace()
         self.db_session.bulk_insert_mappings(table_cls, mapped_data)
         self.db_session.commit()
 

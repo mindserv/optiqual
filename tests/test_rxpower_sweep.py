@@ -181,7 +181,7 @@ class TestRxpowerSweep(BaseTest):
         self.setup(self.__class__.__name__, SWEEP_CONFIG_PATH)
         self.log.info("Enabling the attenuator with initial attenuation")
 
-        data_results = {"wl": [], "pwr": [], "atten": [], "rx1pwr_mW": [], "rx2pwr_mW": [], "rx3pwr_mW": [], "rx4pwr_mW": [], "rxtotalpwr_dBm": [] }
+        data_results = {"pwr": [], "atten": [], "rx1pwr_mW": [], "rx2pwr_mW": [], "rx3pwr_mW": [], "rx4pwr_mW": [], "rxtotalpwr_dBm": [] }
         self.log.info("Start Measurements...")
         import pdb; pdb.set_trace()
         self.configure_equipment()
@@ -236,7 +236,7 @@ class TestRxpowerSweep(BaseTest):
         data_results['rx4pwr_mW'] = [point[4] for point in data_list]
         data_results['rxtotalpwr_dBm'] = [point[5] for point in data_list]
 
-        self.record_results("Test_RxPower_Sweep", data_results, test_status)
+        self.record_results("TestRxPowerSweep", data_results, test_status)
 
 
 

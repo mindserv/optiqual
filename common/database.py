@@ -115,7 +115,7 @@ class TestSweeps(Base):
     attenuation = Column(Float)
 
 
-class TestRxpowerSweep(Base):
+class TestRxPowerSweep(Base):
     __tablename__ = 'test_rxpower_sweep'
     id = Column(Integer, primary_key=True)
     test_results_id = Column(Integer, ForeignKey('test_results.id'))
