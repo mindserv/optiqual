@@ -21,7 +21,6 @@ class TestRxpowerSweep(BaseTest):
 
     #region setupMethod
     def setup_method(self):
-        import pdb; pdb.set_trace()
         self.opm = self.station.tx_opm
         self.att = self.station.tx_attenuator
         self.dut = self.sub20
@@ -56,7 +55,6 @@ class TestRxpowerSweep(BaseTest):
 
     # region configureDut
     def configure_dut(self):
-        import pdb; pdb.set_trace()
         dut_sn = self.dut.i2c_read(self.memaddr, 0xC4, 16)
         chrlist= [chr(decimal) for decimal in dut_sn]
         module_sn = ''.join(chrlist)
@@ -181,9 +179,8 @@ class TestRxpowerSweep(BaseTest):
         self.setup(self.__class__.__name__, SWEEP_CONFIG_PATH)
         self.log.info("Enabling the attenuator with initial attenuation")
 
-        data_results = {"pwr": [], "atten": [], "rx1pwr_mW": [], "rx2pwr_mW": [], "rx3pwr_mW": [], "rx4pwr_mW": [], "rxtotalpwr_dBm": [] }
+        data_results = {}
         self.log.info("Start Measurements...")
-        import pdb; pdb.set_trace()
         self.configure_equipment()
         if(self.att.output == 0):
             self.log.info("Enable the attenuator")
@@ -194,7 +191,7 @@ class TestRxpowerSweep(BaseTest):
 
 
         self.configure_dut()
-        import pdb; pdb.set_trace()
+
         data_string = "Idx,Attenuation_dB,Power_dBm,Rx1_Power_mW,Rx2_Power_mW,Rx3_Power_mW,Rx4_Power_mW,Rx_Total_power_dBm"
         self.log.info(data_string)
         self.log.log_csv(data_string)
@@ -227,14 +224,14 @@ class TestRxpowerSweep(BaseTest):
             wl_list.append(self.wavelength)
             index += 1
 
-        data_results['Wl'] = wl_list
-        data_results['atten'] = [point[0] for point in data_list]
-        data_results['pwr'] = [point[1] for point in data_list]
-        data_results['rx1pwr_mW'] = [point[2] for point in data_list]
-        data_results['rx2pwr_mW'] = [point[3] for point in data_list]
-        data_results['rx3pwr_mW'] = [point[3] for point in data_list]
-        data_results['rx4pwr_mW'] = [point[4] for point in data_list]
-        data_results['rxtotalpwr_dBm'] = [point[5] for point in data_list]
+        data_results['wavelength'] = wl_list
+        data_results['attenuation'] = [point[0] for point in data_list]
+        data_results['tx_opm_power'] = [point[1] for point in data_list]
+        data_results['rx1_power_mW'] = [point[2] for point in data_list]
+        data_results['rx2_power_mW'] = [point[3] for point in data_list]
+        data_results['rx3_power_mW'] = [point[3] for point in data_list]
+        data_results['rx4_power_mW'] = [point[4] for point in data_list]
+        data_results['rx_total_power_dBm'] = [point[5] for point in data_list]
 
         self.record_results("TestRxPowerSweep", data_results, test_status)
 

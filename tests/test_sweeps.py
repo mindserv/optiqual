@@ -33,7 +33,7 @@ class TestSweeps(BaseTest):
         self.sweep_stop = self.sweep_configs['sweep_stop']
         self.sweep_step = self.sweep_configs['sweep_step']
         self.delay_sec = self.sweep_configs['delay_sec']
-        import pdb; pdb.set_trace()
+
         print(self.sub20)
 
     #import matplotlib.pyplot as plt

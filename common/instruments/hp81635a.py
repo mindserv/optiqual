@@ -3,7 +3,7 @@ from .instrument_driver_base import InstrumentDriverBase
 
 class hp81635a(InstrumentDriverBase):
     def __init__(self, *instr):
-        #import pdb; pdb.set_trace()
+
         self.instr = instr[0]
         self.chassis = int(instr[1]['chassis'])
         self.slot = int(instr[1]['slot'])

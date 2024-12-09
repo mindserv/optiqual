@@ -143,7 +143,6 @@ class BaseTest(object):
             entry['test_results_id'] = self.tr_id
 
         table_cls = TEST_CLASS_TABLE_MAP.get(test_table_name)
-        import pdb; pdb.set_trace()
         self.db_session.bulk_insert_mappings(table_cls, mapped_data)
         self.db_session.commit()
 
