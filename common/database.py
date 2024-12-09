@@ -115,6 +115,21 @@ class TestSweeps(Base):
     attenuation = Column(Float)
 
 
+class TestRxpowerSweep(Base):
+    __tablename__ = 'test_rxpower_sweep'
+    id = Column(Integer, primary_key=True)
+    test_results_id = Column(Integer, ForeignKey('test_results.id'))
+    wavelength = Column(Float)
+    attenuation = Column(Float)
+    tx_opm_power = Column(Float)
+    rx1_power_mW = Column(Float)
+    rx2_power_mW = Column(Float)
+    rx3_power_mW = Column(Float)
+    rx4_power_mW = Column(Float)
+    rx_total_power_dBm = Column(Float)
+
+
+
 if __name__ == '__main__':
     user = "postgres"
     password = "postgres"

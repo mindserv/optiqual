@@ -1,7 +1,7 @@
-from ctypes import create_string_buffer
+from ctypes import create_string_buffer, c_char_p, c_int, c_void_p, c_char, sizeof
 import sys
 #from .sub20lib import Sub20Lib
-from .sub20lib import *
+from .sub20lib import Sub20Lib
 import threading
 import struct
 
@@ -138,7 +138,7 @@ class Sub20Driver(object):
 
         buffer = create_string_buffer(len)
         devaddr = devaddr >> 1
-
+        #print(self._device_handler)
         if bus == 4:
             with self._lock:
                 response = dll_handler.sub_i2c_read(self._device_handler, devaddr, memaddr, byte_length(memaddr), buffer, len)

@@ -95,7 +95,7 @@ class TestSweeps(BaseTest):
         self.att.output = 1
         self.att.attenuation = self.initial_attn
         self.att.wavelength = self.wavelength
-        self.opm.wavelength = self.wavelength
+        self.opm.wavelengthc = self.wavelength
         data_string = "Idx,Attenuation_dB,Power_dBm"
         self.log.log_csv(data_string)
         index = 0
