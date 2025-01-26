@@ -66,14 +66,14 @@ Base = declarative_base()
 
 
 class TestResults(Base):
-    __tablename__ = 'test_results'
+    __tablename__ = "TestResults"
 
     id = Column(Integer, primary_key=True)
-    dut_id = Column(Integer, ForeignKey('dut.id'))
+    dut_id = Column(Integer, ForeignKey('Dut.id'))
     test_name = Column(String, nullable=False)
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime)
-    station_id = Column(Integer, ForeignKey('station.id'))
+    station_id = Column(Integer, ForeignKey('Station.id'))
     config_file = Column(String)
     results_html_file = Column(String)
     results_csv_file = Column(String)
@@ -84,7 +84,7 @@ class TestResults(Base):
 
 
 class Dut(Base):
-    __tablename__ = 'dut'
+    __tablename__ = "Dut"
     id = Column(Integer, primary_key=True)
     dut_sn = Column(String, nullable=False, unique=True)
     dut_part_num = Column(String, nullable=False)
@@ -93,32 +93,32 @@ class Dut(Base):
 
 
 class Station(Base):
-    __tablename__ = 'station'
+    __tablename__ = "Station"
     id = Column(Integer, primary_key=True)
     station_name = Column(String, nullable=False)
     station_description = Column(String, nullable=False)
 
 class DummyRxAccuracy(Base):
-    __tablename__ = 'dummy_rx_accuracy'
+    __tablename__ = "DummyRxAccuracy"
     id = Column(Integer, primary_key=True)
-    test_results_id = Column(Integer, ForeignKey('test_results.id'))
+    test_results_id = Column(Integer, ForeignKey('TestResults.id'))
     wavelength = Column(Float)
     rx_power = Column(Float)
     attenuation = Column(Float)
 
 class TestSweeps(Base):
-    __tablename__ = 'test_sweeps'
+    __tablename__ = "TestSweeps"
     id = Column(Integer, primary_key=True)
-    test_results_id = Column(Integer, ForeignKey('test_results.id'))
+    test_results_id = Column(Integer, ForeignKey('TestResults.id'))
     wavelength = Column(Float)
     rx_power = Column(Float)
     attenuation = Column(Float)
 
 
 class TestRxPowerSweep(Base):
-    __tablename__ = 'test_rxpower_sweep'
+    __tablename__ = 'TestRxPowerSweep'
     id = Column(Integer, primary_key=True)
-    test_results_id = Column(Integer, ForeignKey('test_results.id'))
+    test_results_id = Column(Integer, ForeignKey('TestResults.id'))
     wavelength = Column(Float)
     attenuation = Column(Float)
     tx_opm_power = Column(Float)

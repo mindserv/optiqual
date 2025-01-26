@@ -12,8 +12,7 @@ TEST_CLASS_TABLE_MAP = {"TestSweeps": TestSweeps, "TestResults": TestResults,
                         "Dut": Dut, "DummyRxAccuracy": DummyRxAccuracy, "Station": Station,
                         "TestRxPowerSweep": TestRxPowerSweep}
 
-
-@pytest.mark.usefixtures("station", "db", "artifacts", "db_session", "sub20")
+@pytest.mark.usefixtures("station", "db", "artifacts", "db_session", "sub20", "add_custom_data")
 class BaseTest(object):
     """
     Tests written in pytest format will inherit from this base class.
@@ -28,10 +27,10 @@ class BaseTest(object):
         :param config_file: Test config file (recipe)
         :return:
         """
-        insert_sql = text("INSERT INTO test_results(dut_id, test_name, start_time, station_id, config_file, "
-                          "pass_fail) values ("
-                          ":dut_id, :test_name, :start_time, :station_id,"
-                          ":config_file, :pass_fail)")
+        insert_sql = text('INSERT INTO "TestResults"(dut_id, test_name, start_time, station_id, config_file, '
+                          'pass_fail) values ('
+                          ':dut_id, :test_name, :start_time, :station_id,'
+                          ':config_file, :pass_fail)')
         with self.db.connect() as conn:
             conn.execute(insert_sql, {"dut_id": dut_id, "test_name": test_name, "start_time": start_time,
                                       "station_id": station_id, "config_file": test_config,
@@ -39,14 +38,14 @@ class BaseTest(object):
 
             conn.commit()
 
-            res = conn.execute(text("select id from test_results where dut_id=:dut_id and test_name=:test_name and "
-                                    "start_time=:start_time and station_id=:station_id and config_file=:config_file "
-                                    "and pass_fail=:pass_fail"),
+            res = conn.execute(text('select id from "TestResults" where dut_id=:dut_id and test_name=:test_name and '
+                                    'start_time=:start_time and station_id=:station_id and config_file=:config_file '
+                                    'and pass_fail=:pass_fail'),
                                {"dut_id": dut_id, "test_name": test_name, "start_time": start_time,
                                 "station_id": station_id, "config_file": test_config,
                                 "pass_fail": TestStatus.INCOMPLETE})
-
             self.tr_id = res.fetchone()[0]
+            self.custom_data["test_result_id"] = self.tr_id
 
     def _start_record_results(self, test_name, test_config, station_id):
         """
@@ -64,19 +63,19 @@ class BaseTest(object):
                 with conn.begin():
                     # TODO: dut_id should be checked
                     conn.execute(
-                        text("INSERT INTO Dut (dut_sn, dut_part_num, dut_part_num_rev, date) values (:sn, "
-                             ":pn, :rev, :date)"),
-                        {"sn": self.artifacts.sn, "pn": self.artifacts.pn, "rev": "00", "date": formatted_datetime})
+                        text('INSERT INTO "Dut" (dut_sn, dut_part_num, dut_part_num_rev, date) values (:sn, '
+                             ':pn, :rev, :date)'),
+                        {'sn': self.artifacts.sn, 'pn': self.artifacts.pn, 'rev': '00', "date": formatted_datetime})
 
                 with conn.begin():
-                    res = conn.execute(text("SELECT id from Dut where dut_sn=:sn and dut_part_num=:pn and date=:date"),
-                                       {"sn": self.artifacts.sn, "pn": self.artifacts.pn, "date": formatted_datetime})
+                    res = conn.execute(text('SELECT id from "Dut" where dut_sn=:sn and dut_part_num=:pn and date=:date'),
+                                       {"sn": self.artifacts.sn, "pn": self.artifacts.pn, 'date': formatted_datetime})
                     self.dut_id = res.fetchone()[0]
         except IntegrityError as exp:
             if exp._sql_message().__contains__("duplicate key value"):
 
                 with self.db.connect() as conn:
-                    self.dut_id = conn.execute(text("SELECT id from Dut where dut_sn = :sn and dut_part_num = :pn"),
+                    self.dut_id = conn.execute(text('SELECT id from "Dut" where dut_sn = :sn and dut_part_num = :pn'),
                                                {"sn": self.artifacts.sn, "pn": self.artifacts.pn}).fetchone()[0]
 
             else:
@@ -85,7 +84,7 @@ class BaseTest(object):
 
         self.log.info("Fetching Station id")
         with self.db.connect() as conn:
-            res = conn.execute(text("select id from station where station_name=:station_name"),
+            res = conn.execute(text('select id from "Station" where station_name=:station_name'),
                                {"station_name": self.station.name})
             self.station_id = res.fetchone()[0]
         self._record_test_results(self.dut_id, test_name, test_config, formatted_datetime, station_id)
@@ -150,8 +149,8 @@ class BaseTest(object):
         # TODO: CSV, HTML, DUT_SW_VERSION etc.. later
         now = datetime.datetime.now()
         end_time = now.strftime("%Y-%m-%d %H:%M:%S")
-        update_test_results = text("UPDATE test_results set pass_fail = :test_status, end_time = :end_time where id = "
-                                   ":tr_id")
+        update_test_results = text('UPDATE "TestResults" set pass_fail = :test_status, end_time = :end_time where id = '
+                                   ':tr_id')
         if test_status:
             test_status = TestStatus.PASS
         else:

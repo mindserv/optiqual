@@ -2,7 +2,7 @@ import pytest
 from station import Station, SupportedStations
 from database import Station as StationTable, get_connection, get_session
 from types import SimpleNamespace
-from instruments.sub20_driver import Sub20Driver
+# from instruments.sub20_driver import Sub20Driver
 
 DB_HOST = "localhost"  # or your database host
 DB_PORT = 5432  # default PostgreSQL port
@@ -41,6 +41,19 @@ def artifacts(request):
 
 @pytest.fixture(scope='class')
 def sub20(request):
-    sub20 = Sub20Driver()
+    #sub20 = Sub20Driver()
+    sub20 = "test"
     request.cls.sub20 = sub20
     yield
+
+@pytest.fixture(scope="class")
+def add_custom_data(request):
+    # Initialize a dictionary at the class level
+    if not hasattr(request.cls, "custom_data"):
+        request.cls.custom_data = {}
+
+    def _add_data(key, value):
+        # Add custom data to the class-level dictionary
+        request.cls.custom_data[key] = value
+
+    return _add_data

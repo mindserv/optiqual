@@ -8,6 +8,9 @@ from types import SimpleNamespace
 # TODO: Fix the . notation by setting the path correctly.
 from .hp81635a import hp81635a
 from .hp8156a import hp8156a
+from .hp86060c import hp86060c
+from .ms9710b import ms9710b
+
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))#os.path.dirname(os.path.dirname(os.path.abspath(__file__), '..'))
 INSTRUMENT_CONFIG_FILE = os.path.join(BASE_DIR, "config", "instrument.yaml")#"/Users/kathir/mydev/optiqual/config/instrument.yaml"
 GPIB = 'GPIB'

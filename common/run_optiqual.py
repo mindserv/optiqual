@@ -19,6 +19,7 @@ def _construct_help_msg():
     """
 
 
+
 def _validate_device_station_map(station: dict, device: dict) -> None:
     """
     Helper to validate the product types supported in the given test station.
@@ -45,6 +46,7 @@ def invoke_pytest(args, plugins=None):
         #with local.cwd("/Users/kathir/mydev/optiqual/tests"):
         with local.cwd(TEST_DIR):
             args = [str(arg) for arg in args]
+            # args += ["--json-report",  "--json-report-file", "pytest_report.json"]
             return_code = pytest.main(args, plugins=plugins)
     except Exception:
         # TODO: log and gracefully exit

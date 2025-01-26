@@ -1,3 +1,5 @@
+import time
+
 import pytest
 from base_test import BaseTest
 import os
@@ -20,7 +22,6 @@ class SweepSettings(object):
             return yaml.safe_load(sweep_config.read())
 
 
-#@pytest.mark.usefixtures("station")
 class TestSweeps(BaseTest):
 
     def setup_method(self):
@@ -65,7 +66,52 @@ class TestSweeps(BaseTest):
                              14.14],
                    "rx_power": [-84.29186, -84.34473, -84.34473, -84.34473, -84.34473, -84.34473, -84.34473,
                                 -84.34473, -84.34473, -84.34473, -84.34473, -84.33258, -84.33258, -84.33258, -84.33258]}
+    """
+    result_data = [{'wavelength': 1310, 'attenuation': 0, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3779000000000001, 'rx2_power_mW': 1.5204000000000002,
+'rx3_power_mW': 1.5204000000000002, 'rx4_power_mW': 1.5246000000000002, 'rx_total_power_dBm': 1.3689, 'test_results_id': 45},
 
+{'wavelength': 1310, 'attenuation': 1, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3785, 'rx2_power_mW': 1.5212, 'rx3_power_mW': 1.5212,
+'rx4_power_mW': 1.5231000000000001, 'rx_total_power_dBm': 1.3689, 'test_results_id': 45},
+
+{'wavelength': 1310, 'attenuation': 2, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3776000000000002, 'rx2_power_mW': 1.5178000000000003,
+'rx3_power_mW': 1.5178000000000003, 'rx4_power_mW': 1.5246000000000002, 'rx_total_power_dBm': 1.3689,'test_results_id': 45},
+
+{'wavelength': 1310, 'attenuation': 3, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3785, 'rx2_power_mW': 1.5204000000000002,
+'rx3_power_mW': 1.5204000000000002, 'rx4_power_mW': 1.5239, 'rx_total_power_dBm': 1.3696000000000002, 'test_results_id': 45},
+
+{'wavelength': 1310, 'attenuation': 4, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3785, 'rx2_power_mW': 1.5204000000000002,
+'rx3_power_mW': 1.5204000000000002, 'rx4_power_mW': 1.5246000000000002, 'rx_total_power_dBm': 1.3682, 'test_results_id': 45},
+
+{'wavelength': 1310, 'attenuation': 5, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3767, 'rx2_power_mW': 1.5196, 'rx3_power_mW': 1.5196,
+'rx4_power_mW': 1.5231000000000001, 'rx_total_power_dBm': 1.3696000000000002, 'test_results_id': 45},
+
+{'wavelength': 1310, 'attenuation': 6, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3779000000000001, 'rx2_power_mW': 1.5221000000000002,
+'rx3_power_mW': 1.5221000000000002, 'rx4_power_mW': 1.5239, 'rx_total_power_dBm': 1.3696000000000002, 'test_results_id': 45},
+
+{'wavelength': 1310, 'attenuation': 7, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3779000000000001, 'rx2_power_mW': 1.5204000000000002,
+'rx3_power_mW': 1.5204000000000002, 'rx4_power_mW': 1.5246000000000002, 'rx_total_power_dBm': 1.3696000000000002, 'test_results_id': 45},
+
+{'wavelength': 1310, 'attenuation': 8,'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3785, 'rx2_power_mW': 1.5204000000000002,
+'rx3_power_mW': 1.5204000000000002, 'rx4_power_mW': 1.5231000000000001, 'rx_total_power_dBm': 1.3682, 'test_results_id': 45},
+
+{'wavelength': 1310, 'attenuation': 9, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3764, 'rx2_power_mW': 1.5195, 'rx3_power_mW': 1.5195,
+'rx4_power_mW': 1.5239, 'rx_total_power_dBm': 1.3689, 'test_results_id': 45},
+
+{'wavelength': 1310, 'attenuation': 10, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3773000000000002, 'rx2_power_mW': 1.5204000000000002,
+'rx3_power_mW': 1.5204000000000002, 'rx4_power_mW': 1.5239, 'rx_total_power_dBm': 1.3689, 'test_results_id': 45},
+
+{'wavelength': 1310, 'attenuation': 11, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3779000000000001, 'rx2_power_mW': 1.5212, 'rx3_power_mW': 1.5212,
+'rx4_power_mW': 1.5246000000000002, 'rx_total_power_dBm': 1.3689, 'test_results_id': 45},
+
+{'wavelength': 1310, 'attenuation': 12, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3785, 'rx2_power_mW': 1.5212, 'rx3_power_mW': 1.5212,
+'rx4_power_mW': 1.5246000000000002, 'rx_total_power_dBm': 1.3689, 'test_results_id': 45},
+
+{'wavelength': 1310, 'attenuation': 13, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3785, 'rx2_power_mW': 1.5204000000000002,
+'rx3_power_mW': 1.5204000000000002, 'rx4_power_mW': 1.5231000000000001, 'rx_total_power_dBm': 1.3689, 'test_results_id': 45},
+
+{'wavelength': 1310, 'attenuation': 14, 'tx_opm_power': 0.317762, 'rx1_power_mW': 1.3785, 'rx2_power_mW': 1.5204000000000002,
+'rx3_power_mW': 1.5204000000000002, 'rx4_power_mW': 1.5246000000000002, 'rx_total_power_dBm': 1.3696000000000002, 'test_results_id': 45}]
+    """
     def generate_chart(self, data):
         # Extract x and y values
         x_values = [point[0] for point in data]
@@ -91,6 +137,7 @@ class TestSweeps(BaseTest):
         test_status = False
         self.setup(self.__class__.__name__, SWEEP_CONFIG_PATH)
         self.log.info("Enabling the attenuator with initial attenuation")
+        time.sleep(5)
         """
         self.att.output = 1
         self.att.attenuation = self.initial_attn
